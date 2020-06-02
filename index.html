@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>카페 음료 검색하기</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h2 class="container">메뉴 검색</h2>
+    </header>
+    <form v-on:submit.prevent="onSubmit">
+      <!-- keyup 이 되었을 때, Reset 버튼이 보이게 하고, Input에 값이 없을 때 
+      보이게 하기 위하여 v-model="message"를 넣어, message가 비었으면 Button의 v-show를 false를 리턴.
+       -->
+      <input type="text" v-model="message"v-on:keyup="showResetBtn" v-on:keyup.delete="showMenu" placeholder="드실 음료를 검색하세요">
+      <!--v-show 의 특성을 이용하여, puting이라는 값을 data에 넣고 기본값으로 false를 넣어 keyup이 되면 true를 리턴
+      button이 눌렸을 때 버튼이 사라지도록 hideResetBtn 메소드를 만들어 이벤트 발생 시 v-show 값을 false로 넣게 하였음-->
+      <button type="reset" v-on:click="hideResetBtn" v-show="puting" class="btn-reset"></button>
+    </form>
+    <ul class="tabs" v-show="hideTabs">
+      <!-- 탭이 선택 되었을 때, CSS를 적용하기 위한 클래스를 바인딩 하기 위하여 v-bind를 사용 하였습니다.-->
+      <li v-bind:class="tabCofAct" @click="clickCof">커피메뉴</li>
+      <li v-bind:class="tabBevAct" @click="clickBev">음료메뉴</li>
+    </ul>
+    <ul class="list" v-show="onCoffee">
+      <!-- 커피 메뉴는 번호와 메뉴,가격 형태로 나뉘어져 있어 menu와 index를 v-for하게 하였습니다.-->
+      <li v-for="(menu, index) in cfMenus">
+        <!-- number와 menu 모두 상위컴포넌트의 데이터에서 받아 작성되므로 props를 사용하였습니다.-->
+        <coffee-number v-bind:propsdata="index"></coffee-number>
+        <coffee-name  v-bind:propsdata="menu"></coffee-name>
+      </li>
+      <!-- 커피메뉴가 없을 시, 커피메뉴를 삭제하는 메소드의 이벤트 발생에 따라  
+        data의 warninchCof 값을 바꾸는 조건을 설정해 두었습니다.  -->
+      {{warningCof}}
+    </ul>
+    <ul class="list" v-show="onBeverage">
+      <li v-for="menu in bvMenus">
+        <!-- number와 price 모두 상위컴포넌트의 데이터에서 받아 작성되므로 props를 사용하였습니다.-->
+        <!-- button의 props는 누른 버튼의 name을 받아오기 위하여 사용하였습니다. 삭제를 위한 event를 
+        하위 컴포넌트에서 받아왔습니다.-->
+        <beverage-name v-bind:propsdata="menu" ></beverage-name>
+        <beverage-price v-bind:propsdata="menu" class="price"></beverage-price>
+        <beverage-button v-bind:propsdata="menu" v-on:pass="removeBev" class="btn-remove"></beverage-button>
+      </li>
+      <!-- 음료메뉴가 없을 시, 음료메뉴를 삭제하는 메소드의 이벤트 발생에 따라  
+              data의 warninchBev 값을 바꾸는 조건을 설정해 두었습니다.  -->
+      {{warningBev}}
+    </ul>
+  </div>
+  <ul id="search-result" v-show="showImage">
+    <li v-for="photo in photos">
+        <!-- 상위 컴포넌트의 데이터 photo의 data 중 image 에 저장되있는 url을 통해 이미지 소스값을 지정하였습니다.-->
+        <coffee-image v-bind:propsdata="photo" :src="photo.image"></coffee-image>
+        <coffee-name v-bind:propsdata="photo"></coffee-name>
+    </li>
+  </ul>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
